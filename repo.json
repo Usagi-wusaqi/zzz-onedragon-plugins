@@ -1,17 +1,18 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-01-30T00:00:00Z",
+  "updated_at": "2026-01-31T00:00:00Z",
   "url": "https://github.com/Usagi-wusaqi/zzz-onedragon-plugins/archive/refs/heads/main.zip",
   "plugins": [
     {
       "id": "example_plugin",
       "name": "示例插件",
       "version": "1.0.0",
-      "description": "演示如何创建 ZZZ-OneDragon 插件的示例",
-      "authors": ["Usagi-wusaqi"],
+      "description": "演示如何创建 ZZZ-OneDragon 插件的示例模板",
+      "author": "Usagi-wusaqi",
+      "homepage": "https://github.com/Usagi-wusaqi/zzz-onedragon-plugins",
       "tags": ["示例", "模板"],
       "default_group": true,
-      "last_updated": "2026-01-30"
+      "last_updated": "2026-01-31"
     }
   ]
 }

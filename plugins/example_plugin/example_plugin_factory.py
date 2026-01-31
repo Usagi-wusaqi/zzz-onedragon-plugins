@@ -1,16 +1,20 @@
 """示例插件工厂。
 
 工厂文件必须以 _factory.py 结尾才能被 ApplicationPluginManager 自动发现。
+
+重要：插件内部的导入必须使用完整模块路径 (zzz_od.plugins.xxx)
 """
+
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from one_dragon.base.operation.application.application_config import ApplicationConfig
 from one_dragon.base.operation.application.application_factory import ApplicationFactory
-from one_dragon.base.operation.application_base import Application
 from one_dragon.base.operation.application_run_record import AppRunRecord
 
-from . import example_plugin_const
+# ✅ 正确 - 使用完整路径导入
+from zzz_od.plugins.example_plugin import example_plugin_const
 
 if TYPE_CHECKING:
     from zzz_od.context.zzz_context import ZContext
@@ -19,32 +23,34 @@ if TYPE_CHECKING:
 class ExamplePluginFactory(ApplicationFactory):
     """示例插件工厂。"""
 
-    def __init__(self, ctx: "ZContext"):
+    def __init__(self, ctx: ZContext):
         ApplicationFactory.__init__(
             self,
             app_id=example_plugin_const.APP_ID,
             app_name=example_plugin_const.APP_NAME,
-            need_notify=example_plugin_const.NEED_NOTIFY,
             default_group=example_plugin_const.DEFAULT_GROUP,
         )
-        self.ctx = ctx
+        self.ctx: ZContext = ctx
 
-    def create_application(
-        self, instance_idx: int, group_id: str
-    ) -> Application:
-        from .example_plugin_app import ExamplePluginApp
+    def create_application(self, instance_idx: int, group_id: str):
+        # ✅ 正确 - 使用完整路径导入
+        from zzz_od.plugins.example_plugin.example_plugin_app import ExamplePluginApp
 
-        return ExamplePluginApp(self.ctx, instance_idx, group_id)
+        return ExamplePluginApp(self.ctx)
 
-    def create_config(
-        self, instance_idx: int, group_id: str
-    ) -> ApplicationConfig:
-        from .example_plugin_config import ExamplePluginConfig
+    def create_config(self, instance_idx: int, group_id: str) -> ApplicationConfig:
+        # ✅ 正确 - 使用完整路径导入
+        from zzz_od.plugins.example_plugin.example_plugin_config import (
+            ExamplePluginConfig,
+        )
 
         return ExamplePluginConfig(instance_idx, group_id)
 
     def create_run_record(self, instance_idx: int) -> AppRunRecord:
-        from .example_plugin_run_record import ExamplePluginRunRecord
+        # ✅ 正确 - 使用完整路径导入
+        from zzz_od.plugins.example_plugin.example_plugin_run_record import (
+            ExamplePluginRunRecord,
+        )
 
         return ExamplePluginRunRecord(
             instance_idx=instance_idx,

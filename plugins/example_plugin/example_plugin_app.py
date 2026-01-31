@@ -1,49 +1,29 @@
-"""示例插件应用。"""
+"""示例插件应用。
 
-from typing import TYPE_CHECKING
+演示如何创建一个基本的 ZZZ-OneDragon 插件应用。
 
-from one_dragon.base.operation.application_base import Application
-from one_dragon.base.operation.operation_round_result import OperationRoundResult
-from one_dragon.utils.log_utils import log
+重要：插件内部的导入必须使用完整模块路径 (zzz_od.plugins.xxx)
+"""
 
-from . import example_plugin_const
-
-if TYPE_CHECKING:
-    from zzz_od.context.zzz_context import ZContext
+from one_dragon.base.operation.application.application_base import ApplicationBase
+from zzz_od.context.zzz_context import ZContext
 
 
-class ExamplePluginApp(Application):
+class ExamplePluginApp(ApplicationBase):
     """示例插件应用。
 
     这是一个简单的示例，展示如何创建一个基本的应用。
     """
 
-    def __init__(
-        self,
-        ctx: "ZContext",
-        instance_idx: int | None = None,
-        group_id: str | None = None,
-    ):
-        Application.__init__(
-            self,
-            ctx=ctx,
-            app_id=example_plugin_const.APP_ID,
-            app_name=example_plugin_const.APP_NAME,
-            instance_idx=instance_idx,
-            group_id=group_id,
-        )
-        self.ctx = ctx
+    def __init__(self, ctx: ZContext):
+        ApplicationBase.__init__(self, ctx)
 
-    def run_application(self) -> OperationRoundResult:
-        """执行插件逻辑。"""
-        log.info("示例插件开始执行...")
+    def handle_init(self):
+        pass
 
-        # 在这里添加你的插件逻辑
-        # 例如：
-        # - 截图分析
-        # - 自动点击
-        # - 数据处理
-        # 等等
+    def handle_start(self):
+        # 在这里实现你的应用逻辑
+        pass
 
-        log.info("示例插件执行完成！")
-        return self.round_success()
+    def handle_stop(self):
+        pass

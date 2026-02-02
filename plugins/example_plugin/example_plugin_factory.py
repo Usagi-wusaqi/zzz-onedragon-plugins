@@ -1,8 +1,6 @@
 """示例插件工厂。
 
-工厂文件必须以 _factory.py 结尾才能被 ApplicationPluginManager 自动发现。
-
-重要：插件内部的导入必须使用完整模块路径 (zzz_od.plugins.xxx)
+工厂文件必须以 _factory.py 结尾才能被自动发现。
 """
 
 from __future__ import annotations
@@ -13,8 +11,7 @@ from one_dragon.base.operation.application.application_config import Application
 from one_dragon.base.operation.application.application_factory import ApplicationFactory
 from one_dragon.base.operation.application_run_record import AppRunRecord
 
-# ✅ 正确 - 使用完整路径导入
-from zzz_od.plugins.example_plugin import example_plugin_const
+from . import example_plugin_const
 
 if TYPE_CHECKING:
     from zzz_od.context.zzz_context import ZContext
@@ -33,24 +30,17 @@ class ExamplePluginFactory(ApplicationFactory):
         self.ctx: ZContext = ctx
 
     def create_application(self, instance_idx: int, group_id: str):
-        # ✅ 正确 - 使用完整路径导入
-        from zzz_od.plugins.example_plugin.example_plugin_app import ExamplePluginApp
+        from .example_plugin_app import ExamplePluginApp
 
         return ExamplePluginApp(self.ctx)
 
     def create_config(self, instance_idx: int, group_id: str) -> ApplicationConfig:
-        # ✅ 正确 - 使用完整路径导入
-        from zzz_od.plugins.example_plugin.example_plugin_config import (
-            ExamplePluginConfig,
-        )
+        from .example_plugin_config import ExamplePluginConfig
 
         return ExamplePluginConfig(instance_idx, group_id)
 
     def create_run_record(self, instance_idx: int) -> AppRunRecord:
-        # ✅ 正确 - 使用完整路径导入
-        from zzz_od.plugins.example_plugin.example_plugin_run_record import (
-            ExamplePluginRunRecord,
-        )
+        from .example_plugin_run_record import ExamplePluginRunRecord
 
         return ExamplePluginRunRecord(
             instance_idx=instance_idx,

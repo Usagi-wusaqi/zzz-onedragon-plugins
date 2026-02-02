@@ -2,14 +2,11 @@
 
 展示如何为插件创建可持久化的配置。
 配置文件会保存到 config/{instance_idx}/{group_id}/example_plugin.yml
-
-重要：插件内部的导入必须使用完整模块路径 (zzz_od.plugins.xxx)
 """
 
 from one_dragon.base.operation.application.application_config import ApplicationConfig
 
-# ✅ 正确 - 使用完整路径导入
-from zzz_od.plugins.example_plugin import example_plugin_const
+from . import example_plugin_const
 
 
 class ExamplePluginConfig(ApplicationConfig):

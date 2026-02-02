@@ -2,12 +2,11 @@
 
 展示如何为插件创建运行记录，用于跟踪每日/每周的运行状态。
 运行记录会保存到 .log/application_run_record/{instance_idx}/example_plugin.yml
-
-重要：插件内部的导入必须使用完整模块路径 (zzz_od.plugins.xxx)
 """
 
 from one_dragon.base.operation.application_run_record import AppRunRecord
-from zzz_od.plugins.example_plugin import example_plugin_const
+
+from . import example_plugin_const
 
 
 class ExamplePluginRunRecord(AppRunRecord):

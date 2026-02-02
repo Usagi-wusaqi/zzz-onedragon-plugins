@@ -4,13 +4,7 @@
 
 > ⚠️ **注意**：需要支持插件系统的 ZZZ-OneDragon 版本才能使用。
 
-## 📦 插件列表
-
-| 插件 | 版本 | 描述 | 作者 |
-|------|------|------|------|
-| [example_plugin](plugins/example_plugin) | 1.0.0 | 示例插件模板 | Usagi-wusaqi |
-
-## 🔧 如何使用
+## 如何使用
 
 ### 方法一：通过 GUI 导入（推荐）
 
@@ -22,134 +16,115 @@
 ### 方法二：手动安装
 
 1. 下载插件文件夹（如 `example_plugin`）
-2. 将插件文件夹放入项目的 `src/zzz_od/plugins/` 目录
+2. 将插件文件夹放入项目的 `plugins/` 目录
 3. 重启 ZZZ-OneDragon 或在插件管理界面点击"刷新"
 
-**目录结构：**
+## 特性
 
-```
-ZenlessZoneZero-OneDragon/
-├── src/
-│   └── zzz_od/
-│       └── plugins/           # 插件目录
-│           └── example_plugin/
-│               ├── __init__.py
-│               ├── example_plugin_const.py
-│               ├── example_plugin_factory.py
-│               └── example_plugin_app.py
-└── ...
-```
+- ✅ **相对导入**：`from .utils import xxx`
+- ✅ **导入主程序模块**：`from one_dragon.xxx import yyy`, `from zzz_od.xxx import yyy`
+- ✅ **支持子包**：可以有多层目录结构
 
-## 📝 如何开发插件
+## 加载机制
 
-插件必须遵循 `ApplicationPluginManager` 的自动发现规则。
-
-### 插件目录结构
-
-```
-your_plugin/
-├── __init__.py                # Python 包初始化
-├── your_plugin_const.py       # 常量定义 (必需)
-├── your_plugin_factory.py     # ApplicationFactory 实现 (必需)
-├── your_plugin_app.py         # Application 实现
-├── your_plugin_config.py      # 配置类 (可选)
-├── your_plugin_run_record.py  # 运行记录类 (可选)
-└── README.md                  # 插件说明文档 (建议)
-```
-
-**重要命名规则：**
-- 工厂文件必须以 `_factory.py` 结尾
-- 常量文件命名为 `xxx_const.py`
-
-### const 文件示例
+加载插件时，`plugins/` 目录会被添加到 `sys.path`，使每个插件包成为独立的顶级模块：
 
 ```python
-# your_plugin_const.py
+# 加载过程
+sys.path.insert(0, "project_root/plugins")  # 添加一次
 
-# ============ 核心常量 (必需) ============
-APP_ID = "your_plugin"
-APP_NAME = "你的插件"
-DEFAULT_GROUP = True  # True: 出现在一条龙列表, False: 不出现
+# 插件模块名示例
+# plugins/my_plugin/my_plugin_factory.py → my_plugin.my_plugin_factory
+```
 
-# ============ 插件元数据 (可选，用于 GUI 显示) ============
+## 目录结构示例
+
+```
+plugins/                          # ← 添加到 sys.path
+├── README.md
+├── plugin_a/                     # 插件 A
+│   ├── __init__.py               # 推荐添加
+│   ├── plugin_a_const.py         # 定义 APP_ID, APP_NAME, DEFAULT_GROUP
+│   ├── plugin_a_factory.py       # 工厂类（必须以 _factory.py 结尾）
+│   ├── plugin_a.py               # 应用实现
+│   └── utils/                    # 子包
+│       ├── __init__.py
+│       └── helper.py
+└── plugin_b/                     # 插件 B
+    ├── __init__.py
+    ├── plugin_b_const.py
+    └── plugin_b_factory.py
+```
+
+## 开发指南
+
+### 1. 创建插件目录
+
+在 `plugins/` 下创建以插件名命名的目录，如 `plugins/my_plugin/`。
+
+### 2. 定义常量文件
+
+创建 `my_plugin_const.py`，定义应用的基本信息：
+
+```python
+# plugins/my_plugin/my_plugin_const.py
+
+APP_ID = "my_plugin"
+APP_NAME = "我的插件"
+DEFAULT_GROUP = True  # True: 显示在一条龙列表，False: 独立工具
+
+# 插件元数据（可选，用于 GUI 显示）
 PLUGIN_AUTHOR = "作者名"
-PLUGIN_HOMEPAGE = "https://github.com/author/your_plugin"
+PLUGIN_HOMEPAGE = "https://github.com/author/my_plugin"
 PLUGIN_VERSION = "1.0.0"
 PLUGIN_DESCRIPTION = "插件功能描述"
 ```
 
-### Factory 文件示例
+### 3. 创建工厂类
+
+创建 `my_plugin_factory.py`（**文件名必须以 `_factory.py` 结尾**）：
 
 ```python
-# your_plugin_factory.py
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+# plugins/my_plugin/my_plugin_factory.py
 
 from one_dragon.base.operation.application.application_factory import ApplicationFactory
+from zzz_od.context.zzz_context import ZContext  # ✅ 导入主程序模块
 
-# ✅ 正确 - 使用完整模块路径导入
-from zzz_od.plugins.your_plugin import your_plugin_const
-
-if TYPE_CHECKING:
-    from zzz_od.context.zzz_context import ZContext
+from . import my_plugin_const      # ✅ 相对导入
+from .my_plugin import MyPlugin    # ✅ 相对导入
 
 
-class YourPluginFactory(ApplicationFactory):
-    """你的插件工厂"""
-
+class MyPluginFactory(ApplicationFactory):
     def __init__(self, ctx: ZContext):
-        ApplicationFactory.__init__(
-            self,
-            app_id=your_plugin_const.APP_ID,
-            app_name=your_plugin_const.APP_NAME,
-            default_group=your_plugin_const.DEFAULT_GROUP,
+        super().__init__(
+            app_id=my_plugin_const.APP_ID,
+            app_name=my_plugin_const.APP_NAME,
+            default_group=my_plugin_const.DEFAULT_GROUP,
         )
-        self.ctx: ZContext = ctx
+        self.ctx = ctx
 
-    def create_application(self, instance_idx: int, group_id: str):
-        # ✅ 正确 - 使用完整模块路径导入
-        from zzz_od.plugins.your_plugin.your_plugin_app import YourPluginApp
-        return YourPluginApp(self.ctx)
+    def create_application(self, instance_idx, group_id):
+        return MyPlugin(self.ctx)
 ```
 
-### Application 文件示例
+### 4. 实现应用逻辑
 
 ```python
-# your_plugin_app.py
-from one_dragon.base.operation.application.application_base import ApplicationBase
+# plugins/my_plugin/my_plugin.py
+
+from one_dragon.base.operation.application.application_base import Application
 from zzz_od.context.zzz_context import ZContext
 
+from .utils.helper import do_something  # ✅ 相对导入子模块
 
-class YourPluginApp(ApplicationBase):
-    """你的插件应用"""
 
+class MyPlugin(Application):
     def __init__(self, ctx: ZContext):
-        ApplicationBase.__init__(self, ctx)
+        super().__init__(ctx, "my_plugin", node_max_retry_times=3)
 
-    def handle_init(self):
-        pass
-
-    def handle_start(self):
-        # 在这里实现你的应用逻辑
-        pass
-
-    def handle_stop(self):
-        pass
-```
-
-## ⚠️ 导入规则（重要）
-
-**插件内部的导入必须使用完整模块路径：**
-
-```python
-# ✅ 正确 - 使用完整路径
-from zzz_od.plugins.your_plugin import your_plugin_const
-from zzz_od.plugins.your_plugin.your_plugin_app import YourPluginApp
-
-# ❌ 错误 - 使用相对导入（会导致 ModuleNotFoundError）
-from . import your_plugin_const
-from .your_plugin_app import YourPluginApp
+    def _execute_one_round(self):
+        do_something()
+        return self.round_success()
 ```
 
 ## 📦 打包插件
@@ -157,12 +132,12 @@ from .your_plugin_app import YourPluginApp
 将插件目录压缩为 `.zip` 文件即可分发：
 
 ```
-your_plugin.zip
-└── your_plugin/
+my_plugin.zip
+└── my_plugin/
     ├── __init__.py
-    ├── your_plugin_const.py
-    ├── your_plugin_factory.py
-    └── your_plugin_app.py
+    ├── my_plugin_const.py
+    ├── my_plugin_factory.py
+    └── my_plugin.py
 ```
 
 ## 🔄 应用分组
@@ -194,22 +169,18 @@ your_plugin.zip
 
 ## ❓ 常见问题
 
-### ModuleNotFoundError
-
-检查你的导入语句是否使用了完整路径 `zzz_od.plugins.xxx`，不要使用相对导入。
-
 ### 插件未显示
 
 1. 确保工厂文件以 `_factory.py` 结尾
 2. 确保 const 文件包含 `APP_ID`, `APP_NAME`, `DEFAULT_GROUP`
-3. 检查日志获取详细错误信息
-4. 尝试在插件管理界面点击"刷新"
+3. 确保添加了 `__init__.py` 以支持相对导入
+4. 检查日志获取详细错误信息
+5. 尝试在插件管理界面点击"刷新"
 
-## 📌 注意事项
+## 注意事项
 
-1. **目录命名**：插件目录名应与插件 ID 一致
-2. **文件命名**：工厂文件必须以 `_factory.py` 结尾
-3. **const 文件**：必须定义 `APP_ID`, `APP_NAME`, `DEFAULT_GROUP` 常量
-4. **导入路径**：所有导入必须使用 `zzz_od.plugins.xxx` 完整路径
-5. **元数据**：建议填写 `PLUGIN_AUTHOR`、`PLUGIN_VERSION` 等元数据以便用户识别
-6. **错误处理**：加载失败的工厂会被跳过并记录警告日志
+1. **文件命名**：工厂文件必须以 `_factory.py` 结尾
+2. **`__init__.py`**：建议添加以支持相对导入
+3. **模块名唯一性**：插件包名（目录名）应该唯一，避免与其他插件或主程序模块冲突
+4. **备份**：此目录被 `.gitignore` 忽略，请自行备份
+5. **热重载**：刷新应用时会自动卸载并重新加载插件模块

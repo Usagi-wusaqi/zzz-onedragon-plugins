@@ -1,8 +1,6 @@
 """示例插件应用。
 
 演示如何创建一个基本的 ZZZ-OneDragon 插件应用。
-
-重要：插件内部的导入必须使用完整模块路径 (zzz_od.plugins.xxx)
 """
 
 from one_dragon.base.operation.application.application_base import ApplicationBase

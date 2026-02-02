@@ -1,0 +1,32 @@
+name: Lint Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff Lint
+        run: |
+          ruff check plugins/ --select E,W,F,I,B,UP,SIM,TID --ignore E501
+
+      - name: Run Ruff Format Check
+        run: |
+          ruff format plugins/ --check

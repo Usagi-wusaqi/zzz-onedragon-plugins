@@ -1,23 +1,6 @@
-# ZZZ-OneDragon 插件仓库
+# 第三方插件目录
 
-[ZenlessZoneZero-OneDragon](https://github.com/OneDragon-Anything/ZenlessZoneZero-OneDragon) 的插件仓库。
-
-> ⚠️ **注意**：需要支持插件系统的 ZZZ-OneDragon 版本才能使用。
-
-## 如何使用
-
-### 方法一：通过 GUI 导入（推荐）
-
-1. 打开 ZZZ-OneDragon 设置 → 插件管理
-2. 点击"导入插件"按钮
-3. 选择 `.zip` 格式的插件压缩包
-4. 插件会自动解压并注册
-
-### 方法二：手动安装
-
-1. 下载插件文件夹（如 `example_plugin`）
-2. 将插件文件夹放入项目的 `plugins/` 目录
-3. 重启 ZZZ-OneDragon 或在插件管理界面点击"刷新"
+此目录用于放置第三方插件。
 
 ## 特性
 
@@ -126,56 +109,6 @@ class MyPlugin(Application):
         do_something()
         return self.round_success()
 ```
-
-## 📦 打包插件
-
-将插件目录压缩为 `.zip` 文件即可分发：
-
-```
-my_plugin.zip
-└── my_plugin/
-    ├── __init__.py
-    ├── my_plugin_const.py
-    ├── my_plugin_factory.py
-    └── my_plugin.py
-```
-
-## 🔄 应用分组
-
-### 默认组应用 (DEFAULT_GROUP=True)
-
-- 会出现在"一条龙"运行列表中
-- 可以被用户排序和启用/禁用
-- 适用于：体力刷本、咖啡店、邮件等日常任务
-
-### 非默认组应用 (DEFAULT_GROUP=False)
-
-- 不会出现在"一条龙"运行列表中
-- 作为独立工具使用
-- 适用于：自动战斗、闪避助手、截图工具等
-
-## 📂 示例插件
-
-仓库中包含一个完整的 `example_plugin` 示例，展示基本的插件结构。
-
-| 文件 | 用途 |
-|------|------|
-| `__init__.py` | Python 包初始化 |
-| `example_plugin_const.py` | 常量定义 (APP_ID, APP_NAME, DEFAULT_GROUP, 元数据) |
-| `example_plugin_factory.py` | 工厂类，负责创建应用实例 |
-| `example_plugin_app.py` | 应用类，实现具体逻辑 |
-| `example_plugin_config.py` | 配置类，持久化用户设置 |
-| `example_plugin_run_record.py` | 运行记录类，跟踪运行状态 |
-
-## ❓ 常见问题
-
-### 插件未显示
-
-1. 确保工厂文件以 `_factory.py` 结尾
-2. 确保 const 文件包含 `APP_ID`, `APP_NAME`, `DEFAULT_GROUP`
-3. 确保添加了 `__init__.py` 以支持相对导入
-4. 检查日志获取详细错误信息
-5. 尝试在插件管理界面点击"刷新"
 
 ## 注意事项
 

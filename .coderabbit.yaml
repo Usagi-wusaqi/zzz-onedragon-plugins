@@ -1,0 +1,114 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# CodeRabbit 配置 - ZenlessZoneZero-OneDragon 的插件仓库
+# 文档: https://docs.coderabbit.ai/reference/configuration
+
+language: "zh-CN"
+early_access: false
+
+reviews:
+  # 审查风格: "chill" (宽松) / "assertive" (严格) / "default"
+  profile: "chill"
+
+  # 是否在审查中请求代码变更
+  request_changes_workflow: false
+
+  # 生成高级摘要
+  high_level_summary: true
+
+  # 生成有趣的诗歌（可选）
+  poem: false
+
+  # 显示审查状态
+  review_status: true
+
+  # 显示审查细节
+  review_details: true
+
+  # 自动审查设置
+  auto_review:
+    enabled: true
+    # 不审查草稿 PR
+    drafts: false
+    # 忽略的标题关键词
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+    # 基础分支过滤（只审查合并到这些分支的 PR）
+    base_branches:
+      - "main"
+      - "feat/.*"
+
+  # 路径过滤
+  path_filters:
+    # 排除的路径
+    - "!**/*.md"
+    - "!**/*.json"
+    - "!**/.gitignore"
+    - "!**/LICENSE"
+    - "!.github/**"
+
+  # 路径指令 - 为特定路径提供额外上下文
+  path_instructions:
+    - path: "plugins/**/*.py"
+      instructions: |
+        ## 项目背景
+        这是 ZZZ-OneDragon (绝区零一条龙) 的插件仓库。
+        插件会被安装到主仓库的 `zzz_od/plugins/` 目录下运行。
+
+        ## 代码规范 (Coding Standards)
+        - Python 版本: 3.11+
+        - 使用现代类型注解: `list[str]` 而非 `List[str]`，`X | None` 而非 `Optional[X]`
+        - 所有函数和方法必须有类型注解
+        - 路径处理优先使用 `pathlib`
+        - 字符串格式化使用 f-string
+        - 避免不必要的 try-catch
+
+        ## 插件开发规范
+        ### 文件命名
+        - 工厂文件必须以 `_factory.py` 结尾
+        - 常量文件必须以 `_const.py` 结尾
+
+        ### 必需常量 (xxx_const.py)
+        - `APP_ID`: 插件唯一标识
+        - `APP_NAME`: 插件显示名称
+        - `DEFAULT_GROUP`: 是否出现在一条龙列表
+
+        ### 推荐元数据 (xxx_const.py)
+        - `PLUGIN_AUTHOR`: 作者名
+        - `PLUGIN_HOMEPAGE`: 项目主页
+        - `PLUGIN_VERSION`: 版本号
+        - `PLUGIN_DESCRIPTION`: 描述
+
+        ### 导入规范 (重要!)
+        ✅ 正确: `from zzz_od.plugins.my_plugin import my_plugin_const`
+        ❌ 错误: `from . import my_plugin_const` (禁止相对导入)
+
+        ## 审查指南
+        ### 环境假设
+        - 目标平台: 1080p 分辨率 + PC
+        - 允许硬编码像素坐标 (基于 1080p)
+        - 允许硬编码键盘按键 (如 '`', 'esc')
+
+        ### 审查重点 (只关注这些)
+        - 严重的逻辑错误
+        - 死循环
+        - 潜在的运行时崩溃 (Runtime Error)
+        - 资源泄漏 (如未关闭的文件句柄)
+
+        ### 忽略/不要建议
+        - 缩进、空行、空格等格式问题 (由 Ruff 处理)
+        - 简单逻辑中的 Magic Number
+        - 分辨率适配或控制器类型检查
+        - 过度工程化的"最佳实践"
+        - 非必要的抽象
+
+# 聊天设置
+chat:
+  # 自动回复 @coderabbitai 提及
+  auto_reply: true
+
+# 知识库设置（可选）
+knowledge_base:
+  # Jira/Linear 集成（如果有的话）
+  opt_out: true

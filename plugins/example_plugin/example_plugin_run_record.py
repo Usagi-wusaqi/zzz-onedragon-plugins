@@ -16,7 +16,9 @@ class ExamplePluginRunRecord(AppRunRecord):
     常用于实现"每日一次"的功能。
     """
 
-    def __init__(self, instance_idx: int | None = None, game_refresh_hour_offset: int = 0):
+    def __init__(
+        self, instance_idx: int | None = None, game_refresh_hour_offset: int = 0
+    ):
         AppRunRecord.__init__(
             self,
             app_id=example_plugin_const.APP_ID,

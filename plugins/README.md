@@ -10,14 +10,16 @@
 
 ## 加载机制
 
-加载插件时，`plugins/` 目录会被添加到 `sys.path`，使每个插件包成为独立的顶级模块：
+加载插件时，`plugins/` 目录会被添加到 `sys.path`，使每个插件包成为独立的顶级模块。
+支持嵌套子目录，所有中间包会自动加载（有 `__init__.py` 时执行它，没有时创建命名空间包）：
 
 ```python
 # 加载过程
 sys.path.insert(0, "project_root/plugins")  # 添加一次
 
 # 插件模块名示例
-# plugins/my_plugin/my_plugin_factory.py → my_plugin.my_plugin_factory
+# plugins/my_plugin/my_plugin_factory.py     → my_plugin.my_plugin_factory
+# plugins/my_plugin/sub/sub_factory.py       → my_plugin.sub.sub_factory
 ```
 
 ## 目录结构示例
@@ -27,16 +29,24 @@ plugins/                          # ← 添加到 sys.path
 ├── README.md
 ├── plugin_a/                     # 插件 A
 │   ├── __init__.py               # 推荐添加
-│   ├── plugin_a_const.py         # 定义 APP_ID, APP_NAME, DEFAULT_GROUP
+│   ├── plugin_a_const.py         # 定义 APP_ID, APP_NAME, DEFAULT_GROUP, NEED_NOTIFY
 │   ├── plugin_a_factory.py       # 工厂类（必须以 _factory.py 结尾）
 │   ├── plugin_a.py               # 应用实现
 │   └── utils/                    # 子包
 │       ├── __init__.py
 │       └── helper.py
-└── plugin_b/                     # 插件 B
+├── plugin_b/                     # 插件 B（含嵌套 factory）
+│   ├── __init__.py
+│   ├── plugin_b_const.py         # 主插件常量
+│   ├── plugin_b_factory.py       # 主插件工厂
+│   └── sub_feature/              # 子功能模块
+│       ├── __init__.py
+│       ├── sub_feature_const.py
+│       └── sub_feature_factory.py  # 嵌套工厂，模块名: plugin_b.sub_feature.sub_feature_factory
+└── plugin_c/                     # 插件 C
     ├── __init__.py
-    ├── plugin_b_const.py
-    └── plugin_b_factory.py
+    ├── plugin_c_const.py
+    └── plugin_c_factory.py
 ```
 
 ## 开发指南
@@ -55,6 +65,7 @@ plugins/                          # ← 添加到 sys.path
 APP_ID = "my_plugin"
 APP_NAME = "我的插件"
 DEFAULT_GROUP = True  # True: 显示在一条龙列表，False: 独立工具
+NEED_NOTIFY = True    # 是否需要通知
 
 # 插件元数据（可选，用于 GUI 显示）
 PLUGIN_AUTHOR = "作者名"
@@ -83,6 +94,7 @@ class MyPluginFactory(ApplicationFactory):
             app_id=my_plugin_const.APP_ID,
             app_name=my_plugin_const.APP_NAME,
             default_group=my_plugin_const.DEFAULT_GROUP,
+            need_notify=my_plugin_const.NEED_NOTIFY,
         )
         self.ctx = ctx
 
@@ -95,7 +107,7 @@ class MyPluginFactory(ApplicationFactory):
 ```python
 # plugins/my_plugin/my_plugin.py
 
-from one_dragon.base.operation.application.application_base import Application
+from one_dragon.base.operation.application_base import Application
 from zzz_od.context.zzz_context import ZContext
 
 from .utils.helper import do_something  # ✅ 相对导入子模块
@@ -103,7 +115,7 @@ from .utils.helper import do_something  # ✅ 相对导入子模块
 
 class MyPlugin(Application):
     def __init__(self, ctx: ZContext):
-        super().__init__(ctx, "my_plugin", node_max_retry_times=3)
+        Application.__init__(self, ctx, "my_plugin", node_max_retry_times=3)
 
     def _execute_one_round(self):
         do_something()
@@ -113,7 +125,9 @@ class MyPlugin(Application):
 ## 注意事项
 
 1. **文件命名**：工厂文件必须以 `_factory.py` 结尾
-2. **`__init__.py`**：建议添加以支持相对导入
-3. **模块名唯一性**：插件包名（目录名）应该唯一，避免与其他插件或主程序模块冲突
-4. **备份**：此目录被 `.gitignore` 忽略，请自行备份
-5. **热重载**：刷新应用时会自动卸载并重新加载插件模块
+2. **必需字段**：const 文件必须定义 `APP_ID`, `APP_NAME`, `DEFAULT_GROUP`, `NEED_NOTIFY`（顺序一致）
+3. **`__init__.py`**：建议添加以支持相对导入，无 `__init__.py` 时会自动创建命名空间包
+4. **模块名唯一性**：插件包名（目录名）应该唯一，避免与其他插件或主程序模块冲突
+5. **备份**：此目录被 `.gitignore` 忽略，请自行备份
+6. **热重载**：刷新应用时会卸载整个插件包并重新加载
+7. **嵌套目录**：支持在插件包内任意深度放置 `_factory.py` 文件

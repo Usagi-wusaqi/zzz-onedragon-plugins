@@ -26,6 +26,7 @@ class ExamplePluginFactory(ApplicationFactory):
             app_id=example_plugin_const.APP_ID,
             app_name=example_plugin_const.APP_NAME,
             default_group=example_plugin_const.DEFAULT_GROUP,
+            need_notify=example_plugin_const.NEED_NOTIFY,
         )
         self.ctx: ZContext = ctx
 

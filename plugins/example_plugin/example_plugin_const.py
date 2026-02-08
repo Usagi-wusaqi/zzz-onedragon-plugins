@@ -7,6 +7,7 @@
 APP_ID = "example_plugin"
 APP_NAME = "示例插件"
 DEFAULT_GROUP = True  # True: 出现在一条龙列表, False: 不出现
+NEED_NOTIFY = False  # 是否需要通知
 
 # ============ 插件元数据 (可选，用于 GUI 显示) ============
 PLUGIN_AUTHOR = "Usagi-wusaqi"

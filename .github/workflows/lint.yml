@@ -1,14 +1,15 @@
 name: Lint Check
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   push:
     branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -24,9 +25,33 @@ jobs:
         run: pip install ruff
 
       - name: Run Ruff Lint
-        run: |
-          ruff check plugins/ --select E,W,F,I,B,UP,SIM,TID --ignore E501
+        # select:
+        #   E    - pycodestyle Error         - 基础代码风格错误
+        #   W    - pycodestyle Warning       - 基础代码风格警告
+        #   F    - Pyflakes                  - 未使用导入、未定义变量等
+        #   I    - isort                     - import 排序
+        #   C    - comprehensions + mccabe   - 推导式 + 复杂度
+        #   B    - flake8-bugbear            - 常见 bug 模式
+        #   UP   - pyupgrade                - 自动升级到现代 Python 语法
+        #   SIM  - flake8-simplify           - 简化冗余逻辑
+        #   TID  - flake8-tidy-imports       - 整理 import
+        #   T10  - flake8-debugger           - 防止 debugger 泄漏
+        #   RUF  - Ruff-specific             - Ruff 独有规则
+        # ignore:
+        #   E501   - line-too-long                     - 行太长（formatter 处理）
+        #   SIM102 - collapsible-if                    - 嵌套 if 合并（有时嵌套更清晰）
+        #   SIM105 - suppressible-exception            - 显式 try/except 比 contextlib.suppress 更直观
+        #   SIM108 - if-else-block-instead-of-if-exp   - 显式 if/else 比三元表达式更清晰
+        #   RUF001 - ambiguous-unicode-character-string   - 字符串中的 Unicode 歧义字符（中文项目）
+        #   RUF002 - ambiguous-unicode-character-docstring - 文档字符串中的 Unicode 歧义字符（中文项目）
+        #   RUF003 - ambiguous-unicode-character-comment  - 注释中的 Unicode 歧义字符（中文项目）
+        #   RUF012 - mutable-class-default             - 类级别可变属性（框架模式常见）
+        #   RUF013 - implicit-optional                 - 隐式 Optional（渐进式类型标注常见）
+        run: >
+          ruff check plugins/
+          --output-format=github
+          --select E,W,F,I,C,B,UP,SIM,TID,T10,RUF
+          --ignore E501,SIM102,SIM105,SIM108,RUF001,RUF002,RUF003,RUF012,RUF013
 
       - name: Run Ruff Format Check
-        run: |
-          ruff format plugins/ --check
+        run: ruff format plugins/ --check

@@ -148,7 +148,7 @@ class MonthlyRestockOperation(ZOperation):
         """选择获取数量"""
         time.sleep(0.5)
         max_clicks = self._max_quantity - 1
-        clicks = min(self.config.outpost_logistics_obtain_number, max_clicks)
+        clicks = min(self.config.monthly_restock_obtain_number, max_clicks)
         if clicks > 0 and not self._click_increase_button(clicks):
             return self.round_retry(status='未找到数量增加按钮', wait=1)
         return self.round_success()

@@ -1,58 +1,49 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-from PySide6.QtWidgets import QWidget
 from qfluentwidgets import FluentIcon
 
 from one_dragon.utils.i18_utils import gt
 from one_dragon_qt.utils.config_utils import get_prop_adapter
-from one_dragon_qt.widgets.column import Column
+from one_dragon_qt.widgets.app_setting.app_setting_flyout import AppSettingFlyout
 from one_dragon_qt.widgets.setting_card.editable_combo_box_setting_card import EditableComboBoxSettingCard
 from one_dragon_qt.widgets.setting_card.switch_setting_card import SwitchSettingCard
 from . import auto_obtain_prepaid_power_card_const
-from ..auto_obtain_prepaid_power_card_config import (
+from .auto_obtain_prepaid_power_card_config import (
     AutoObtainPrepaidPowerCardConfig, OutpostLogisticsObtainNumber, MonthlyRestockObtainNumber, FadingSignalObtainNumber
 )
 
 
-if TYPE_CHECKING:
-    from zzz_od.context.zzz_context import ZContext
-
-
-class AutoObtainPrepaidPowerCardDialog(AppSettingFlyout):
+class AutoObtainPrepaidPowerCardSettingFlyout(AppSettingFlyout):
 
     def _setup_ui(self, layout) -> None:
 
         self.outpost_logistics = SwitchSettingCard(icon=FluentIcon.SHOPPING_CART, title='后勤商店')
         self.outpost_logistics.value_changed.connect(self._on_outpost_logistics_toggled)
-        layout.add_widget(self.outpost_logistics)
+        layout.addWidget(self.outpost_logistics)
 
         self.outpost_logistics_obtain_number = EditableComboBoxSettingCard(
             icon=FluentIcon.GAME, title=gt('后勤商店获取数量'),
             options_enum=OutpostLogisticsObtainNumber,
         )
-        layout.add_widget(self.outpost_logistics_obtain_number)
+        layout.addWidget(self.outpost_logistics_obtain_number)
 
         self.monthly_restock = SwitchSettingCard(icon=FluentIcon.SHOPPING_CART, title='情报板商店')
         self.monthly_restock.value_changed.connect(self._on_monthly_restock_toggled)
-        layout.add_widget(self.monthly_restock)
+        layout.addWidget(self.monthly_restock)
 
         self.monthly_restock_obtain_number = EditableComboBoxSettingCard(
             icon=FluentIcon.GAME, title=gt('情报板商店获取数量'),
             options_enum=MonthlyRestockObtainNumber,
         )
-        layout.add_widget(self.monthly_restock_obtain_number)
+        layout.addWidget(self.monthly_restock_obtain_number)
 
         self.fading_signal = SwitchSettingCard(icon=FluentIcon.SHOPPING_CART, title='信号残响')
         self.fading_signal.value_changed.connect(self._on_signal_shop_toggled)
-        layout.add_widget(self.fading_signal)
+        layout.addWidget(self.fading_signal)
 
         self.fading_signal_obtain_number = EditableComboBoxSettingCard(
             icon=FluentIcon.GAME, title=gt('信号残响获取数量'),
             options_enum=FadingSignalObtainNumber,
         )
-        layout.add_widget(self.fading_signal_obtain_number)
+        layout.addWidget(self.fading_signal_obtain_number)
 
 
     def init_config(self) -> None:

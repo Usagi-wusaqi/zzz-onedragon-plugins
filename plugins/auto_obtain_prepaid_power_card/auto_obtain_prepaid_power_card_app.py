@@ -108,6 +108,7 @@ class AutoObtainPrepaidPowerCardApp(ZApplication):
     # ==================== 信号残响节点 ====================
 
     @node_from(from_name='检查配置', status='信号残响')
+    @node_from(from_name='后勤商店', status='信号残响')
     @node_from(from_name='情报板商店', status='信号残响')
     @operation_node(name='信号残响')
     def fading_signal(self) -> OperationRoundResult:

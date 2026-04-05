@@ -121,10 +121,12 @@ class HifiMasterSynthesisOp(ZOperation):
     @operation_node(name='返回大世界')
     def return_to_world(self) -> OperationRoundResult:
         """返回大世界"""
-        self.round_by_click_area("画面-通用", "返回")
-        return self.round_success(wait=1)
+        result = self.round_by_click_area("画面-通用", "返回")
+        if result.is_success:
+            return self.round_success(result.status, wait=1)
+        return self.round_retry(wait=1)
 
-def __debug():
+def __debug() -> None:
     from zzz_od.context.zzz_context import ZContext
     ctx = ZContext()
     ctx.init()

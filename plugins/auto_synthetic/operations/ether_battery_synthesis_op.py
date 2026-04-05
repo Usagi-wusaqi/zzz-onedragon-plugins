@@ -179,15 +179,17 @@ class EtherBatterySynthesisOp(ZOperation):
     @operation_node(name='返回')
     def back(self) -> OperationRoundResult:
         """点击左上角返回按钮"""
-        self.round_by_click_area("画面-通用", "返回")
-        return self.round_success(wait=1)
+        result = self.round_by_click_area("画面-通用", "返回")
+        if result.is_success:
+            return self.round_success(result.status, wait=1)
+        return self.round_retry(wait=1)
 
     @node_from(from_name='返回')
     @operation_node(name='前往大世界')
     def goto_world(self):
         return self.round_by_find_and_click_area(self.last_screenshot, '画面-通用', '左上角-街区')
 
-def __debug():
+def __debug() -> None:
     from zzz_od.context.zzz_context import ZContext
     from ..auto_synthetic_config import AutoSyntheticConfig
 

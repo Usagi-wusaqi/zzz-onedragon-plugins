@@ -102,7 +102,7 @@ class AutoSyntheticApp(ZApplication):
         op = BackToNormalWorld(self.ctx)
         return self.round_by_op_result(op.execute())
 
-def __debug():
+def __debug() -> None:
     from zzz_od.context.zzz_context import ZContext
 
     ctx = ZContext()

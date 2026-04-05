@@ -46,7 +46,7 @@ class AutoSyntheticConfig(ApplicationConfig):
     def source_ether_battery_auto_synthetic_quantity(self) -> str:
         return self.get(
             'source_ether_battery_auto_synthetic_quantity',
-            SourceEtherBatteryAutoSyntheticQuantity.ALL.value
+            SourceEtherBatteryAutoSyntheticQuantity.ALL.value.value
         )
 
     @source_ether_battery_auto_synthetic_quantity.setter

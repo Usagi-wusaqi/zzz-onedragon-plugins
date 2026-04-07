@@ -17,16 +17,6 @@ if TYPE_CHECKING:
     from .auto_synthetic_config import AutoSyntheticConfig
 
 
-class Task:
-    """任务类"""
-
-    def __init__(self, name: str, operation_class, enabled: bool = True) -> None:
-        self.name = name
-        self.operation_class = operation_class
-        self.enabled = enabled
-        self.result = None
-
-
 class AutoSyntheticApp(ZApplication):
     TASK_HIFI_MASTER = '母盘合成'
     TASK_ETHER_BATTERY = '电池合成'
@@ -44,58 +34,70 @@ class AutoSyntheticApp(ZApplication):
             group_id=application_const.DEFAULT_GROUP_ID,
         )
 
-        self.tasks: list[Task] = []
+        self._task_queue: list[str] = []
         self.current_task_index: int = 0
 
     @operation_node(name='检查配置', is_start_node=True)
     def check_config(self) -> OperationRoundResult:
         """检查配置，构建任务队列"""
-        self._build_tasks()
-
-        if not self.tasks:
-            return self.round_success(status='无需合成')
-
-        self.current_task_index = 0
-        return self._execute_all_tasks()
-
-    def _build_tasks(self) -> None:
-        """根据配置构建任务列表"""
-        self.tasks = []
+        self._task_queue = []
 
         if self.config.hifi_master_copy:
-            self.tasks.append(Task(
-                name=self.TASK_HIFI_MASTER,
-                operation_class=HifiMasterSynthesisOp
-            ))
-
+            self._task_queue.append(self.TASK_HIFI_MASTER)
         if self.config.source_ether_battery:
-            self.tasks.append(Task(
-                name=self.TASK_ETHER_BATTERY,
-                operation_class=EtherBatterySynthesisOp
-            ))
+            self._task_queue.append(self.TASK_ETHER_BATTERY)
 
-    def _execute_all_tasks(self) -> OperationRoundResult:
-        """执行所有任务"""
-        while self.current_task_index < len(self.tasks):
-            task = self.tasks[self.current_task_index]
+        if not self._task_queue:
+            return self.round_success(status='无任务')
 
-            # 创建并执行操作
-            if task.name == self.TASK_ETHER_BATTERY:
-                op = task.operation_class(self.ctx, self.config)
-            else:
-                op = task.operation_class(self.ctx)
+        self.current_task_index = 0
 
-            result = op.execute()
-            task.result = result
+        return self._get_next_task_status()
 
-            # 移动到下一个任务
-            self.current_task_index += 1
+    def _get_next_task_status(self) -> OperationRoundResult:
+        """获取下一个任务的状态"""
+        if self._current_task_index >= len(self._task_queue):
+            return self.round_success(status='全部完成')
 
-        # 所有任务执行完毕
-        return self.round_success(status='全部完成')
+        current_task = self._task_queue[self._current_task_index]
+
+        return self.round_success(status=current_task)
+
+    # ==================== 母盘合成节点 ====================
+
+    @node_from(from_name='检查配置', status='母盘合成')
+    @operation_node(name='母盘合成')
+    def hifi_master(self) -> OperationRoundResult:
+        """执行母盘合成操作"""
+        op = HifiMasterSynthesisOp(self.ctx)
+        result = self.round_by_op_result(op.execute())
+
+        if result.is_success:
+            self._current_task_index += 1
+            return self._get_next_task_status()
+        return result
+
+    # ==================== 电池合成节点 ====================
+
+    @node_from(from_name='检查配置', status='电池合成')
+    @node_from(from_name='母盘合成', status='电池合成')
+    @operation_node(name='电池合成')
+    def source_ether_battery(self) -> OperationRoundResult:
+        """执行电池合成操作"""
+        op = EtherBatterySynthesisOp(self.ctx, self.config)
+        result = self.round_by_op_result(op.execute())
+
+        if result.is_success:
+            self._current_task_index += 1
+            return self._get_next_task_status()
+        return result
+
+    # ==================== 完成节点 ====================
 
     @node_from(from_name='检查配置', status='全部完成')
-    @node_from(from_name='检查配置', status='无需合成')
+    @node_from(from_name='检查配置', status='无任务')
+    @node_from(from_name='母盘合成', status='全部完成')
+    @node_from(from_name='电池合成', status='全部完成')
     @operation_node(name='最终返回')
     def final_return(self) -> OperationRoundResult:
         """最终返回大世界"""

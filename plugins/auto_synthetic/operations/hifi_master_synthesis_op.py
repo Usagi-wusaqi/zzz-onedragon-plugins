@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class HifiMasterSynthesisOp(ZOperation):
     """母盘合成操作"""
 
-    def __init__(self, ctx: ZContext):
+    def __init__(self, ctx: ZContext) -> None:
         ZOperation.__init__(self, ctx, op_name='母盘合成')
 
     @operation_node(name='传送', is_start_node=True)

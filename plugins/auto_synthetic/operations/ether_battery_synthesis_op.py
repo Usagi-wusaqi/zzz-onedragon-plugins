@@ -186,7 +186,7 @@ class EtherBatterySynthesisOp(ZOperation):
 
     @node_from(from_name='返回')
     @operation_node(name='前往大世界')
-    def goto_world(self):
+    def goto_world(self) -> OperationRoundResult:
         return self.round_by_find_and_click_area(self.last_screenshot, '画面-通用', '左上角-街区')
 
 def __debug() -> None:

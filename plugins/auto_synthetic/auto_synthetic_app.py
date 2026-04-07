@@ -73,7 +73,7 @@ class AutoSyntheticApp(ZApplication):
         result = self.round_by_op_result(op.execute())
 
         if result.is_success:
-            self._current_task_index += 1
+            self.current_task_index += 1
             return self._get_next_task_status()
         return result
 
@@ -88,7 +88,7 @@ class AutoSyntheticApp(ZApplication):
         result = self.round_by_op_result(op.execute())
 
         if result.is_success:
-            self._current_task_index += 1
+            self.current_task_index += 1
             return self._get_next_task_status()
         return result
 

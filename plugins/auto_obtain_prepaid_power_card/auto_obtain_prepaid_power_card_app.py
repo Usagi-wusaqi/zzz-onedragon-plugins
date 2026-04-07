@@ -123,10 +123,10 @@ class AutoObtainPrepaidPowerCardApp(ZApplication):
 
     # ==================== 完成节点 ====================
 
+    @node_from(from_name='检查配置', status='无需获取')
     @node_from(from_name='后勤商店', status='全部完成')
     @node_from(from_name='情报板商店', status='全部完成')
     @node_from(from_name='信号残响', status='全部完成')
-    @node_from(from_name='检查配置', status='无需获取')
     @operation_node(name='最终返回')
     def final_return(self) -> OperationRoundResult:
         """最终返回大世界"""

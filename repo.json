@@ -1,28 +1,18 @@
 {
-  "version": "1.0.0",
-  "updated_at": "2026-01-31T00:00:00Z",
+  "version": "1.0.1",
+  "updated_at": "2026-04-27T00:00:00Z",
   "url": "https://github.com/Usagi-wusaqi/zzz-onedragon-plugins/archive/refs/heads/main.zip",
   "plugins": [
     {
       "id": "example_plugin",
       "name": "示例插件",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "演示如何创建 ZZZ-OneDragon 插件的示例模板",
       "author": "Usagi-wusaqi",
       "homepage": "https://github.com/Usagi-wusaqi/zzz-onedragon-plugins",
       "tags": ["示例", "模板"],
       "default_group": true,
-      "last_updated": "2026-01-30"
-    },
-    {
-      "id": "ether_battery",
-      "name": "以太电池",
-      "version": "1.0.0",
-      "description": "通过快捷手册自动合成电卡",
-      "authors": ["Usagi-wusaqi"],
-      "tags": ["自动化", "合成", "电卡"],
-      "default_group": true,
-      "last_updated": "2026-01-30"
+      "last_updated": "2026-04-27"
     }
   ]
 }

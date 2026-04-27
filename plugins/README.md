@@ -90,12 +90,7 @@ from .my_plugin import MyPlugin    # ✅ 相对导入
 
 class MyPluginFactory(ApplicationFactory):
     def __init__(self, ctx: ZContext):
-        super().__init__(
-            app_id=my_plugin_const.APP_ID,
-            app_name=my_plugin_const.APP_NAME,
-            default_group=my_plugin_const.DEFAULT_GROUP,
-            need_notify=my_plugin_const.NEED_NOTIFY,
-        )
+        ApplicationFactory.__init__(self, my_plugin_const)
         self.ctx = ctx
 
     def create_application(self, instance_idx, group_id):
@@ -128,6 +123,7 @@ class MyPlugin(Application):
 2. **必需字段**：const 文件必须定义 `APP_ID`, `APP_NAME`, `DEFAULT_GROUP`, `NEED_NOTIFY`（顺序一致）
 3. **`__init__.py`**：建议添加以支持相对导入，无 `__init__.py` 时会自动创建命名空间包
 4. **模块名唯一性**：插件包名（目录名）应该唯一，避免与其他插件或主程序模块冲突
-5. **备份**：此目录被 `.gitignore` 忽略，请自行备份
-6. **热重载**：刷新应用时会卸载整个插件包并重新加载
-7. **嵌套目录**：支持在插件包内任意深度放置 `_factory.py` 文件
+5. **工厂初始化**：当前版本传入整个 const 模块，如 `ApplicationFactory.__init__(self, my_plugin_const)`
+6. **备份**：此目录被 `.gitignore` 忽略，请自行备份
+7. **热重载**：刷新应用时会卸载整个插件包并重新加载
+8. **嵌套目录**：支持在插件包内任意深度放置 `_factory.py` 文件

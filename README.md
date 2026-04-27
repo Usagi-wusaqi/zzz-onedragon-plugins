@@ -40,13 +40,7 @@ from zzz_od.application.my_app.my_app import MyApp
 class MyAppFactory(ApplicationFactory):
 
     def __init__(self, ctx):
-        ApplicationFactory.__init__(
-            self,
-            app_id=my_app_const.APP_ID,
-            app_name=my_app_const.APP_NAME,
-            default_group=my_app_const.DEFAULT_GROUP,
-            need_notify=my_app_const.NEED_NOTIFY,
-        )
+        ApplicationFactory.__init__(self, my_app_const)
         self.ctx = ctx
 
     def create_application(self, instance_idx, group_id):
@@ -105,12 +99,7 @@ from .my_plugin import MyPlugin
 
 class MyPluginFactory(ApplicationFactory):
     def __init__(self, ctx: ZContext):
-        super().__init__(
-            app_id=my_plugin_const.APP_ID,
-            app_name=my_plugin_const.APP_NAME,
-            default_group=my_plugin_const.DEFAULT_GROUP,
-            need_notify=my_plugin_const.NEED_NOTIFY,
-        )
+        ApplicationFactory.__init__(self, my_plugin_const)
         self.ctx = ctx
 
     def create_application(self, instance_idx, group_id):
@@ -195,5 +184,6 @@ class MyContext(OneDragonContext):
 2. **一模块一工厂**：每个 `_factory.py` 中只定义一个 `ApplicationFactory` 子类
 3. **const 必需字段**：`APP_ID`、`APP_NAME`、`DEFAULT_GROUP`、`NEED_NOTIFY`
 4. **同目录冲突**：同目录下多个 `_factory.py` 或 `_const.py` 时整个目录被跳过
-5. **第三方插件备份**：`plugins/` 被 gitignore，用户需自行备份
-6. **设置界面**：如需为应用添加设置界面，请参考 [application_setting_guide.md](https://github.com/OneDragon-Anything/ZenlessZoneZero-OneDragon/blob/main/docs/develop/guides/application_setting_guide.md)
+5. **工厂初始化**：当前版本传入整个 const 模块，如 `ApplicationFactory.__init__(self, my_plugin_const)`
+6. **第三方插件备份**：`plugins/` 被 gitignore，用户需自行备份
+7. **设置界面**：如需为应用添加设置界面，请参考 [application_setting_guide.md](https://github.com/OneDragon-Anything/ZenlessZoneZero-OneDragon/blob/main/docs/develop/guides/application_setting_guide.md)

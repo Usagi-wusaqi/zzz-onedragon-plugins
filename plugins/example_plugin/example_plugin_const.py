@@ -12,5 +12,5 @@ NEED_NOTIFY = False  # 是否需要通知
 # ============ 插件元数据 (可选，用于 GUI 显示) ============
 PLUGIN_AUTHOR = "Usagi-wusaqi"
 PLUGIN_HOMEPAGE = "https://github.com/Usagi-wusaqi/zzz-onedragon-plugins"
-PLUGIN_VERSION = "1.0.0"
+PLUGIN_VERSION = "1.0.1"
 PLUGIN_DESCRIPTION = "演示如何创建 ZZZ-OneDragon 插件的示例模板"
